@@ -67,18 +67,19 @@ private:
         }
       });
     RCLCPP_INFO(get_logger(), "[outside %d] Returned from waitForTransform()", t);
-
     if (this->wait_outside_) {
-      RCLCPP_INFO(get_logger(), "[outside %d] Calling get()", t);
-      tf2::TimePoint lu_time = tf2_ros::fromMsg(future.get().header.stamp);
-      if (msg_time != lu_time) {
-        int t_wrong = future.get().header.stamp.sec;
-        throw std::runtime_error(
-          "[outside " + std::to_string(t) + "]: got wrong timestamp " + std::to_string(t_wrong));
+      RCLCPP_INFO(get_logger(), "[outside %d] Calling wait_for()", t);
+      auto status = future.wait_for(std::chrono::milliseconds(this->timeout_ms_ + 200));
+      if (status == std::future_status::deferred) {
+        RCLCPP_INFO(get_logger(), "[outside %d] Status is deferred", t);
+      } else if (status == std::future_status::timeout) {
+        RCLCPP_INFO(get_logger(), "[outside %d] Status is timeout", t);
+      } else {
+        RCLCPP_INFO(get_logger(), "[outside %d] Status is ready", t);
       }
-      RCLCPP_INFO(get_logger(), "[outside %d] Returned from get() with transform", t);
     }
   }
+
 
   rclcpp::Subscription<geometry_msgs::msg::PointStamped>::SharedPtr subscription_;
   tf2_ros::Buffer tf_buffer_;
