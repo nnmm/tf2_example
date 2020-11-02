@@ -37,18 +37,20 @@ public:
     timeout_ms_ = this->declare_parameter("timeout_ms").get<int>();
     wait_inside_ = this->declare_parameter("wait_inside").get<bool>();
     wait_outside_ = this->declare_parameter("wait_outside").get<bool>();
+    most_recent_ = this->declare_parameter("most_recent").get<bool>();
+    // Actually there is another dimension, whether or not to pass 0 to the timeout
     RCLCPP_INFO(get_logger(), "timeout is %dms", timeout_ms_);
   }
 
 private:
   void topic_callback(const geometry_msgs::msg::PointStamped::SharedPtr msg)
   {
-    tf2::TimePoint msg_time = tf2_ros::fromMsg(msg->header.stamp);
+    tf2::TimePoint msg_time = most_recent_ ? tf2::TimePointZero : tf2_ros::fromMsg(msg->header.stamp);
     int t = msg->header.stamp.sec;
 
     RCLCPP_INFO(get_logger(), "[outside %d] Calling waitForTransform()", t);
     auto future = tf_buffer_.waitForTransform(
-      "a", "b", msg_time, std::chrono::milliseconds(this->timeout_ms_),
+      "a", "b", msg_time, wait_outside_ ? std::chrono::milliseconds(0) : std::chrono::milliseconds(timeout_ms_),
       [this, msg_time, t](const std::shared_future<geometry_msgs::msg::TransformStamped> & tf) {
         if (this->wait_inside_) {
           try {
@@ -69,13 +71,20 @@ private:
     RCLCPP_INFO(get_logger(), "[outside %d] Returned from waitForTransform()", t);
     if (this->wait_outside_) {
       RCLCPP_INFO(get_logger(), "[outside %d] Calling wait_for()", t);
-      auto status = future.wait_for(std::chrono::milliseconds(this->timeout_ms_ + 200));
+      auto status = future.wait_for(std::chrono::milliseconds(this->timeout_ms_));
       if (status == std::future_status::deferred) {
         RCLCPP_INFO(get_logger(), "[outside %d] Status is deferred", t);
       } else if (status == std::future_status::timeout) {
         RCLCPP_INFO(get_logger(), "[outside %d] Status is timeout", t);
       } else {
-        RCLCPP_INFO(get_logger(), "[outside %d] Status is ready", t);
+        RCLCPP_INFO(get_logger(), "[outside %d] Status is ready, calling get()", t);
+        tf2::TimePoint lu_time = tf2_ros::fromMsg(future.get().header.stamp);
+        if (msg_time != lu_time) {
+          int t_wrong = future.get().header.stamp.sec;
+          throw std::runtime_error(
+            "[outside " + std::to_string(t) + "]: got wrong timestamp " +
+            std::to_string(t_wrong));
+        }
       }
     }
   }
@@ -87,6 +96,7 @@ private:
   int timeout_ms_;
   bool wait_inside_;
   bool wait_outside_;
+  bool most_recent_;
 };
 
 int main(int argc, char * argv[])

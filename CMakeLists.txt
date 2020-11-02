@@ -24,9 +24,17 @@ ament_target_dependencies(publisher rclcpp geometry_msgs std_msgs tf2 tf2_ros)
 add_executable(waiter src/waiter.cpp)
 ament_target_dependencies(waiter rclcpp geometry_msgs std_msgs tf2 tf2_ros)
 
+add_executable(publisher_case2 src/publisher_case2.cpp)
+ament_target_dependencies(publisher_case2 rclcpp geometry_msgs std_msgs tf2 tf2_ros)
+
+add_executable(waiter_case2 src/waiter_case2.cpp)
+ament_target_dependencies(waiter_case2 rclcpp geometry_msgs std_msgs tf2 tf2_ros)
+
 install(TARGETS
   publisher
   waiter
+  publisher_case2
+  waiter_case2
   DESTINATION lib/${PROJECT_NAME}
 )
 

@@ -28,26 +28,18 @@ class Publisher : public rclcpp::Node
 public:
   Publisher() : Node("minimal_publisher"), tf_broadcaster_(*this), count_(0)
   {
-    publisher_ = this->create_publisher<geometry_msgs::msg::PointStamped>("point", 10);
-    timer_ = this->create_wall_timer(1000ms, std::bind(&Publisher::timer_callback, this));
+    // publisher_ = this->create_publisher<geometry_msgs::msg::PointStamped>("point", 1);
+    timer_ = this->create_wall_timer(30ms, std::bind(&Publisher::timer_callback, this));
   }
 
 private:
   void timer_callback()
   {
-    // Alternate between sending data and transform
-    if (count_ % 2 == 0) {
-      geometry_msgs::msg::PointStamped message;
-      message.header.stamp.sec = count_ + 100;
-      publisher_->publish(message);
-    } else {
-      geometry_msgs::msg::TransformStamped message;
-      message.header.stamp.sec = count_ + 100;
-      message.header.frame_id = "a";
-      message.child_frame_id = "b";
-      tf_broadcaster_.sendTransform(message);
-    }
-    count_++;
+    geometry_msgs::msg::TransformStamped message;
+    message.header.stamp = this->now();
+    message.header.frame_id = "a";
+    message.child_frame_id = "b";
+    tf_broadcaster_.sendTransform(message);
   }
 
   rclcpp::TimerBase::SharedPtr timer_;
