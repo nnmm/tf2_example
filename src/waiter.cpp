@@ -23,6 +23,7 @@
 #include "rclcpp/rclcpp.hpp"
 
 using std::placeholders::_1;
+using namespace std::chrono_literals;
 
 class Waiter : public rclcpp::Node
 {
@@ -50,7 +51,7 @@ private:
 
     RCLCPP_INFO(get_logger(), "[outside %d] Calling waitForTransform()", t);
     auto future = tf_buffer_.waitForTransform(
-      "a", "b", msg_time, wait_outside_ ? std::chrono::milliseconds(0) : std::chrono::milliseconds(timeout_ms_),
+      "a", "b", msg_time, std::chrono::milliseconds(timeout_ms_),
       [this, msg_time, t](const std::shared_future<geometry_msgs::msg::TransformStamped> & tf) {
         if (this->wait_inside_) {
           try {
@@ -58,8 +59,8 @@ private:
             tf2::TimePoint lu_time = tf2_ros::fromMsg(tf.get().header.stamp);
             if (msg_time != lu_time) {
               int t_wrong = tf.get().header.stamp.sec;
-              throw std::runtime_error(
-                "[inside " + std::to_string(t) + "]: got wrong timestamp " +
+              RCLCPP_WARN(get_logger(),
+                "[inside " + std::to_string(t) + "] got wrong timestamp " +
                 std::to_string(t_wrong));
             }
             RCLCPP_INFO(get_logger(), "[inside %d] Returned from get() with transform", t);
@@ -81,8 +82,8 @@ private:
         tf2::TimePoint lu_time = tf2_ros::fromMsg(future.get().header.stamp);
         if (msg_time != lu_time) {
           int t_wrong = future.get().header.stamp.sec;
-          throw std::runtime_error(
-            "[outside " + std::to_string(t) + "]: got wrong timestamp " +
+          RCLCPP_WARN(get_logger(),
+            "[outside " + std::to_string(t) + "] got wrong timestamp " +
             std::to_string(t_wrong));
         }
       }
