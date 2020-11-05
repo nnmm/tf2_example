@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.5)
-project(tf_example)
+project(wait_for_transform)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
@@ -18,24 +18,21 @@ find_package(geometry_msgs REQUIRED)
 find_package(tf2 REQUIRED)
 find_package(tf2_ros REQUIRED)
 
-add_executable(publisher src/publisher.cpp)
-ament_target_dependencies(publisher rclcpp geometry_msgs std_msgs tf2 tf2_ros)
+add_executable(sender src/sender.cpp)
+ament_target_dependencies(sender rclcpp geometry_msgs std_msgs tf2 tf2_ros)
 
-add_executable(waiter src/waiter.cpp)
-ament_target_dependencies(waiter rclcpp geometry_msgs std_msgs tf2 tf2_ros)
-
-add_executable(publisher_case2 src/publisher_case2.cpp)
-ament_target_dependencies(publisher_case2 rclcpp geometry_msgs std_msgs tf2 tf2_ros)
-
-add_executable(waiter_case2 src/waiter_case2.cpp)
-ament_target_dependencies(waiter_case2 rclcpp geometry_msgs std_msgs tf2 tf2_ros)
+add_executable(receiver src/receiver.cpp)
+ament_target_dependencies(receiver rclcpp geometry_msgs std_msgs tf2 tf2_ros)
 
 install(TARGETS
-  publisher
-  waiter
-  publisher_case2
-  waiter_case2
+  sender
+  receiver
   DESTINATION lib/${PROJECT_NAME}
+)
+
+install(DIRECTORY
+  launch
+  DESTINATION share/${PROJECT_NAME}/
 )
 
 if(BUILD_TESTING)
