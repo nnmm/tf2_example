@@ -28,19 +28,19 @@ class Sender : public rclcpp::Node
 public:
   Sender() : Node("sender"), tf_broadcaster_(*this)
   {
-    send_first_transform_ = this->declare_parameter("send_first_transform").get<std::string>();
-    send_second_transform_ = this->declare_parameter("send_second_transform").get<std::string>();
+    send_first_transform_ = this->declare_parameter("send_first_tf").get<std::string>();
+    send_second_transform_ = this->declare_parameter("send_second_tf").get<std::string>();
     const std::unordered_set<std::string> allowed = {"before", "during", "after"};
     if (!allowed.count(send_first_transform_)) {
       RCLCPP_FATAL(
         get_logger(),
-        "Invalid value for parameter 'send_first_transform'. Allowed values are 'before', 'during' "
+        "Invalid value for parameter 'send_first_tf'. Allowed values are 'before', 'during' "
         "or 'after' the waiting period.");
     }
     if (!allowed.count(send_second_transform_)) {
       RCLCPP_FATAL(
         get_logger(),
-        "Invalid value for parameter 'send_second_transform'. Allowed values are 'before', "
+        "Invalid value for parameter 'send_second_tf'. Allowed values are 'before', "
         "'during' or 'after' the waiting period.");
     }
 

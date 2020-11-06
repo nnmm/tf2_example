@@ -37,9 +37,11 @@ public:
       trigger_cb = &Receiver::wft_callback;
     } else if (method == "wft_synchronous") {
       trigger_cb = &Receiver::wft_synchronous;
+    } else if (method == "lt") {
+      trigger_cb = &Receiver::lt;
     } else {
       RCLCPP_FATAL(
-        get_logger(), "Invalid value for parameter 'method'. Allowed values are 'wft_callback', 'wft_synchronous'.");
+        get_logger(), "Invalid value for parameter 'method'. Allowed values are 'wft_callback', 'wft_synchronous', 'lt'.");
     }
 
     auto callback = [this, trigger_cb](const std_msgs::msg::Empty::ConstSharedPtr) {
@@ -82,7 +84,7 @@ private:
 
     RCLCPP_INFO(get_logger(), "Calling waitForTransform()");
     tf_buffer_.waitForTransform(
-      "a", "b", tf2::TimePointZero, timeout_, callback);
+      "a", "b", tf2_ros::fromMsg(request_time_), timeout_, callback);
     RCLCPP_INFO(get_logger(), "Returned from waitForTransform()");
   }
 
@@ -107,6 +109,14 @@ private:
           "got wrong timestamp " + std::to_string(t_wrong));
       }
     }
+  }
+
+  void lt()
+  {
+    RCLCPP_INFO(get_logger(), "Calling lookupTransform()");
+    tf_buffer_.lookupTransform(
+      "a", "b", tf2_ros::fromMsg(request_time_));
+    RCLCPP_INFO(get_logger(), "Returned from lookupTransform()");
   }
 
   rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr ready_pub_;

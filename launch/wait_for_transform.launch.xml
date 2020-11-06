@@ -1,7 +1,7 @@
 <launch>
   <!-- sender parameters -->
-  <arg name="send_first_transform" />
-  <arg name="send_second_transform" />
+  <arg name="send_first_tf" />
+  <arg name="send_second_tf" />
   <arg name="send_buffer_time_ms" default="5" />
 
   <!-- shared parameters -->
@@ -10,14 +10,14 @@
   <!-- receiver parameters -->
   <arg name="method" default="wft_callback" />
 
-  <node pkg="tf_example" exec="sender" name="sender" output="screen">
+  <node pkg="wait_for_transform" exec="sender" name="sender" output="screen">
     <param name="timeout_ms" value="$(var timeout_ms)" />
-    <param name="send_first_transform" value="$(var send_first_transform)" />
-    <param name="send_second_transform" value="$(var send_second_transform)" />
+    <param name="send_first_tf" value="$(var send_first_tf)" />
+    <param name="send_second_tf" value="$(var send_second_tf)" />
     <param name="send_buffer_time_ms" value="$(var send_buffer_time_ms)" />
   </node>
 
-  <node pkg="tf_example" exec="receiver" name="receiver" output="screen">
+  <node pkg="wait_for_transform" exec="receiver" name="receiver" output="screen">
     <param name="timeout_ms" value="$(var timeout_ms)" />
     <param name="method" value="$(var method)" />
   </node>
