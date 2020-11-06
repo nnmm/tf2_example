@@ -53,11 +53,11 @@ public:
     trigger_pub_ = this->create_publisher<std_msgs::msg::Empty>("trigger", 1);
 
     // For less code duplication
-    tf_10_.header.frame_id = "a";
-    tf_10_.child_frame_id = "b";
-    tf_10_.header.stamp.sec = 10;
-    tf_30_ = tf_10_;
-    tf_30_.header.stamp.sec = 30;
+    tf_1_.header.frame_id = "a";
+    tf_1_.child_frame_id = "b";
+    tf_1_.header.stamp.sec = 1;
+    tf_2_ = tf_1_;
+    tf_2_.header.stamp.sec = 4;
 
     // I assume it takes some time for transforms to propagate to the other
     // node's buffer, and the actual time that a timeout is active can not be
@@ -75,14 +75,14 @@ private:
   void send_first_transform()
   {
     RCLCPP_INFO(get_logger(), "Sending first transform");
-    tf_broadcaster_.sendTransform(tf_10_);
+    tf_broadcaster_.sendTransform(tf_1_);
     std::this_thread::sleep_for(send_buffer_time_);
   }
 
   void send_second_transform()
   {
     RCLCPP_INFO(get_logger(), "Sending second transform");
-    tf_broadcaster_.sendTransform(tf_30_);
+    tf_broadcaster_.sendTransform(tf_2_);
     std::this_thread::sleep_for(send_buffer_time_);
   }
 
@@ -126,8 +126,8 @@ private:
   rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr ready_sub_;
   rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr trigger_pub_;
   tf2_ros::TransformBroadcaster tf_broadcaster_;
-  geometry_msgs::msg::TransformStamped tf_10_;
-  geometry_msgs::msg::TransformStamped tf_30_;
+  geometry_msgs::msg::TransformStamped tf_1_;
+  geometry_msgs::msg::TransformStamped tf_2_;
   std::chrono::milliseconds send_buffer_time_;
   std::chrono::milliseconds timeout_;
   std::string send_first_transform_;

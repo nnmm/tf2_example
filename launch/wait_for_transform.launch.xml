@@ -9,6 +9,8 @@
 
   <!-- receiver parameters -->
   <arg name="method" default="wft_callback" />
+  <arg name="executor" default="single" />
+  <arg name="request_time" default="current" />
 
   <node pkg="wait_for_transform" exec="sender" name="sender" output="screen">
     <param name="timeout_ms" value="$(var timeout_ms)" />
@@ -20,5 +22,7 @@
   <node pkg="wait_for_transform" exec="receiver" name="receiver" output="screen">
     <param name="timeout_ms" value="$(var timeout_ms)" />
     <param name="method" value="$(var method)" />
+    <param name="executor" value="$(var executor)" />
+    <param name="request_time" value="$(var request_time)" />
   </node>
 </launch>
