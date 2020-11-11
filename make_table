@@ -9,7 +9,7 @@ send_tf_choices = ['before', 'during', 'after']
 request_time_choices = ['current', 'newest']
 
 for executor in executor_choices:
-  for method in ['wft_wait_for']:
+  for method in method_choices:
     for request_time in request_time_choices:
       for send_first_tf in send_tf_choices:
         for send_second_tf in send_tf_choices:
@@ -25,7 +25,7 @@ for executor in executor_choices:
           time.sleep(1.0)
           args = ['ros2', 'launch', 'wait_for_transform', 'wait_for_transform.launch.xml'] + arguments
           try:
-            subprocess.run(args, timeout=10)
+            subprocess.run(args, timeout=8)
           except subprocess.TimeoutExpired as e:
             pass
           finally:
