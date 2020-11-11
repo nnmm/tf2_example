@@ -55,9 +55,9 @@ public:
     // For less code duplication
     tf_1_.header.frame_id = "a";
     tf_1_.child_frame_id = "b";
-    tf_1_.header.stamp.sec = 1;
+    tf_1_.header.stamp.sec = 100;
     tf_2_ = tf_1_;
-    tf_2_.header.stamp.sec = 4;
+    tf_2_.header.stamp.sec = 104;
 
     // I assume it takes some time for transforms to propagate to the other
     // node's buffer, and the actual time that a timeout is active can not be

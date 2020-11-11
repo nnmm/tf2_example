@@ -79,7 +79,7 @@ public:
     } else if (request_time_str == "current") {
       newest_ = false;
       builtin_interfaces::msg::Time msg_time;
-      msg_time.sec = 2;
+      msg_time.sec = 102;
       msg_time.nanosec = 0;
       request_time_ = tf2_ros::fromMsg(msg_time);
     } else {
