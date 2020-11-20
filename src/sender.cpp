@@ -121,6 +121,7 @@ private:
     if (send_second_transform_ == "after") {
       send_second_transform();
     }
+    rclcpp::shutdown(); // Just for testing
   }
 
   rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr ready_sub_;
@@ -137,7 +138,8 @@ private:
 int main(int argc, char * argv[])
 {
   rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<Sender>());
+  auto node = std::make_shared<Sender>();
+  rclcpp::spin(node);
   rclcpp::shutdown();
   return 0;
 }
